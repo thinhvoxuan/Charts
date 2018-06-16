@@ -14,7 +14,7 @@
 
 @interface LineChart2ViewController () <ChartViewDelegate>
 
-@property (nonatomic, strong) IBOutlet LineChartView *chartView;
+@property (nonatomic, strong) IBOutlet RangeChartView *chartView;
 @property (nonatomic, strong) IBOutlet UISlider *sliderX;
 @property (nonatomic, strong) IBOutlet UISlider *sliderY;
 @property (nonatomic, strong) IBOutlet UITextField *sliderTextX;
@@ -115,40 +115,16 @@
 - (void)setDataCount:(int)count range:(double)range
 {
     NSMutableArray *yVals1 = [[NSMutableArray alloc] init];
-    NSMutableArray *yVals2 = [[NSMutableArray alloc] init];
-    NSMutableArray *yVals3 = [[NSMutableArray alloc] init];
+    [yVals1 addObject:[[RangeChartDataEntry alloc] initWithX:1 y:20 minY:10]];
+    [yVals1 addObject:[[RangeChartDataEntry alloc] initWithX:2 y:35 minY:17]];
+    [yVals1 addObject:[[RangeChartDataEntry alloc] initWithX:3 y:40 minY:18]];
+    [yVals1 addObject:[[RangeChartDataEntry alloc] initWithX:4 y:55 minY:40]];
     
-    for (int i = 0; i < count; i++)
-    {
-        double mult = range / 2.0;
-        double val = (double) (arc4random_uniform(mult)) + 50;
-        [yVals1 addObject:[[ChartDataEntry alloc] initWithX:i y:val]];
-    }
-    
-    for (int i = 0; i < count - 1; i++)
-    {
-        double mult = range;
-        double val = (double) (arc4random_uniform(mult)) + 450;
-        [yVals2 addObject:[[ChartDataEntry alloc] initWithX:i y:val]];
-    }
-    
-    for (int i = 0; i < count; i++)
-    {
-        double mult = range;
-        double val = (double) (arc4random_uniform(mult)) + 500;
-        [yVals3 addObject:[[ChartDataEntry alloc] initWithX:i y:val]];
-    }
-    
-    LineChartDataSet *set1 = nil, *set2 = nil, *set3 = nil;
-    
+    LineChartDataSet *set1 = nil;
     if (_chartView.data.dataSetCount > 0)
     {
         set1 = (LineChartDataSet *)_chartView.data.dataSets[0];
-        set2 = (LineChartDataSet *)_chartView.data.dataSets[1];
-        set3 = (LineChartDataSet *)_chartView.data.dataSets[2];
         set1.values = yVals1;
-        set2.values = yVals2;
-        set3.values = yVals3;
         [_chartView.data notifyDataChanged];
         [_chartView notifyDataSetChanged];
     }
@@ -165,32 +141,8 @@
         set1.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
         set1.drawCircleHoleEnabled = NO;
         
-        set2 = [[LineChartDataSet alloc] initWithValues:yVals2 label:@"DataSet 2"];
-        set2.axisDependency = AxisDependencyRight;
-        [set2 setColor:UIColor.redColor];
-        [set2 setCircleColor:UIColor.whiteColor];
-        set2.lineWidth = 2.0;
-        set2.circleRadius = 3.0;
-        set2.fillAlpha = 65/255.0;
-        set2.fillColor = UIColor.redColor;
-        set2.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
-        set2.drawCircleHoleEnabled = NO;
-        
-        set3 = [[LineChartDataSet alloc] initWithValues:yVals3 label:@"DataSet 3"];
-        set3.axisDependency = AxisDependencyRight;
-        [set3 setColor:UIColor.yellowColor];
-        [set3 setCircleColor:UIColor.whiteColor];
-        set3.lineWidth = 2.0;
-        set3.circleRadius = 3.0;
-        set3.fillAlpha = 65/255.0;
-        set3.fillColor = [UIColor.yellowColor colorWithAlphaComponent:200/255.f];
-        set3.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f];
-        set3.drawCircleHoleEnabled = NO;
-        
         NSMutableArray *dataSets = [[NSMutableArray alloc] init];
         [dataSets addObject:set1];
-        [dataSets addObject:set2];
-        [dataSets addObject:set3];
         
         LineChartData *data = [[LineChartData alloc] initWithDataSets:dataSets];
         [data setValueTextColor:UIColor.whiteColor];
@@ -283,8 +235,6 @@
     NSLog(@"chartValueSelected");
     
     [_chartView centerViewToAnimatedWithXValue:entry.x yValue:entry.y axis:[_chartView.data getDataSetByIndex:highlight.dataSetIndex].axisDependency duration:1.0];
-    //[_chartView moveViewToAnimatedWithXValue:entry.x yValue:entry.y axis:[_chartView.data getDataSetByIndex:dataSetIndex].axisDependency duration:1.0];
-    //[_chartView zoomAndCenterViewAnimatedWithScaleX:1.8 scaleY:1.8 xValue:entry.x yValue:entry.y axis:[_chartView.data getDataSetByIndex:dataSetIndex].axisDependency duration:1.0];
 
 }
 
